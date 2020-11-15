@@ -1,2 +1,2 @@
 # epplus-wrapper
-Helpers to get started with spreadsheets fast
+Build and export spreadsheets to Excel, CSV or Byte Array
