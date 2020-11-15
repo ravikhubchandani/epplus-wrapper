@@ -7,10 +7,20 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Ravi Khubchandani</Authors>
     <Company />
+    <PackageProjectUrl>https://github.com/ravikhubchandani/epplus-wrapper/blob/main/README.md</PackageProjectUrl>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="5.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="license.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
