@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -183,6 +184,71 @@ namespace SpreadsheetWrapper
         /// <summary>
         /// Will insert bulk data in the specified sheet starting at the specified index
         /// </summary>
+        /// <param name="table">DataTable object to dump</param>
+        /// <param name="includeHeader">Generate header using DataTable ColumnName attribute</param>
+        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        public void InsertTable(DataTable table, bool includeHeader = true, int rowIndex = 2, int columnIndex = 1)
+        {
+            InsertTable(table, table.TableName, includeHeader, rowIndex, columnIndex);
+        }
+
+        /// <summary>
+        /// Will insert bulk data in the specified sheet starting at the specified index
+        /// </summary>
+        /// <param name="table">DataTable object to dump</param>
+        /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
+        /// <param name="includeHeader">Generate header using DataTable ColumnName attribute</param>
+        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        public void InsertTable(DataTable table, string sheetName, bool includeHeader = true, int rowIndex = 2, int columnIndex = 1)
+        {
+            ExcelWorksheet sheet;
+
+            if (includeHeader)
+            {
+                int headerIndex = rowIndex - 1;
+                if (headerIndex == 0)
+                {
+                    headerIndex = rowIndex;
+                    rowIndex++;
+                }
+
+                var header = new List<string>();
+                foreach (DataColumn column in table.Columns)
+                {
+                    header.Add(column.ColumnName);
+                }
+
+                sheet = GetSheetByNameWithHeader(sheetName, header.ToArray(), headerIndex, columnIndex);
+                
+            }
+            else
+            {
+                sheet = GetSheetByName(sheetName);
+            }
+
+            InsertTable(table, sheet, rowIndex, columnIndex);
+        }
+
+        /// <summary>
+        /// Will insert bulk data in the specified sheet starting at the specified index
+        /// </summary>
+        /// <param name="table">DataTable object to dump</param>
+        /// <param name="sheet">Sheet to insert data</param>
+        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        public void InsertTable(DataTable table, ExcelWorksheet sheet, int rowIndex = 2, int columnIndex = 1)
+        {
+            foreach (DataRow row in table.Rows)
+            {
+                InsertRow(sheet, row.ItemArray, rowIndex, columnIndex);
+            }
+        }
+
+        /// <summary>
+        /// Will insert bulk data in the specified sheet starting at the specified index
+        /// </summary>
         /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
@@ -202,6 +268,9 @@ namespace SpreadsheetWrapper
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         public void InsertRows(ExcelWorksheet sheet, IEnumerable<object[]> data, int rowIndex = 2, int columnIndex = 1)
         {
+            if (rowIndex <= 0) rowIndex = 1;
+            if (columnIndex <= 0) columnIndex = 1;
+
             sheet.Cells[GetRangeForCell(rowIndex, columnIndex)].LoadFromArrays(data);
         }
 
@@ -227,8 +296,12 @@ namespace SpreadsheetWrapper
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         public void InsertRow(ExcelWorksheet sheet, object[] data, int rowIndex = 2, int columnIndex = 1)
         {
+            if (rowIndex <= 0) rowIndex = 1;
+            if (columnIndex <= 0) columnIndex = 1;
+
             sheet.Cells[GetRangeForCell(rowIndex, columnIndex)].LoadFromCollection(data);
         }
+        
 
         /// <summary>
         /// Will create (if sheet is not already created) in the current document and set a header. Header auto-filter enabled for Excel
@@ -240,6 +313,9 @@ namespace SpreadsheetWrapper
         /// <returns></returns>
         public ExcelWorksheet GetSheetByNameWithHeader(string sheetName, string[] header, int rowIndex = 1, int columnIndex = 1)
         {
+            if (rowIndex <= 0) rowIndex = 1;
+            if (columnIndex <= 0) columnIndex = 1;
+
             var sheet = GetSheetByName(sheetName);
             string endColumn = GetExcelColumnName(header.Length);
             string range = GetRangeForCell(rowIndex, columnIndex);
@@ -260,12 +336,19 @@ namespace SpreadsheetWrapper
         /// <returns></returns>
         public ExcelWorksheet GetSheetByName(string sheetName)
         {
-            var sheet = Workbook.Workbook.Worksheets[sheetName];
-            if(sheet == null)
+            if (string.IsNullOrWhiteSpace(sheetName))
             {
-                sheet = Workbook.Workbook.Worksheets.Add(sheetName);
+                var sheet = Workbook.Workbook.Worksheets[sheetName];
+                if (sheet == null)
+                {
+                    sheet = Workbook.Workbook.Worksheets.Add(sheetName);
+                }
+                return sheet;
             }
-            return sheet;
+            else
+            {
+                throw new ArgumentNullException("Argument sheetName is null or empty string");
+            }
         }
 
         protected string GetRangeForCell(int rowIndex, int columnIndex)
