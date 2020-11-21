@@ -12,50 +12,51 @@ namespace Test
         {
             // ------------ PREPARE DATA ------------
 
-            Spreadsheet spreadsheet1 = new Spreadsheet();            
-            IEnumerable<Person> people = GetTestCollection();
-            DataTable cars = GetTestDataTable();
+            using (var spreadsheet1 = new Spreadsheet())
+            {
+                IEnumerable<Person> people = GetTestCollection();
+                DataTable cars = GetTestDataTable();
 
-            // ------------ INSERT ROW(S) / TABLE ------------
+                // ------------ INSERT ROW(S) / TABLE ------------
 
-            // Insert all people
-            var sheet1 = spreadsheet1.GetSheetByNameWithHeader("Everyone", new string[] { "Name", "Age", "IsMale", "Date of birth" });
-            spreadsheet1.InsertRows(sheet1, people.Select(x => x.ConvertToRow()));
+                // Insert all people
+                var sheet1 = spreadsheet1.GetSheetByNameWithHeader("Everyone", new string[] { "Name", "Age", "IsMale", "Date of birth" });
+                spreadsheet1.InsertRows(sheet1, people.Select(x => x.ConvertToRow()));
 
-            // Insert adults only (new Adults sheet will be inserted), no header and will leave one blank column
-            spreadsheet1.InsertRows(sheetName: "Adults", people.Where(x => x.Age >= 18).Select(x => x.ConvertToRow()), rowIndex: 1, columnIndex: 2);
+                // Insert adults only (new Adults sheet will be inserted), no header and will leave one blank column
+                spreadsheet1.InsertRows(sheetName: "Adults", people.Where(x => x.Age >= 18).Select(x => x.ConvertToRow()), rowIndex: 1, columnIndex: 2);
 
-            // Insert one single row
-            spreadsheet1.InsertRow(sheet1, new Person { Name = "Dog", Age = 3, DateOfBirth = new DateTime(2018, 4, 21), IsMale = true }.ConvertToRow(), rowIndex: 6);
+                // Insert one single row
+                spreadsheet1.InsertRow(sheet1, new Person { Name = "Dog", Age = 3, DateOfBirth = new DateTime(2018, 4, 21), IsMale = true }.ConvertToRow(), rowIndex: 6);
 
-            // Insert cars, first using default row generator then using custom row generator
-            spreadsheet1.InsertTable(cars, includeHeader: true );
-            var sheet3 = spreadsheet1.GetSheetByName(cars.TableName);
+                // Insert cars, first using default row generator then using custom row generator
+                spreadsheet1.InsertTable(cars, includeHeader: true);
+                var sheet3 = spreadsheet1.GetSheetByName(cars.TableName);
 
-            spreadsheet1.InsertTable(cars, sheetName: "custom built cars", includeHeader: true, rowConverter: (x) => Car.ConvertToRow(x));
+                spreadsheet1.InsertTable(cars, sheetName: "custom built cars", includeHeader: true, rowConverter: (x) => Car.ConvertToRow(x));
 
-            // ------------ SAVE AS EXCEL / CSV / SERIALIZE DATA ------------
+                // ------------ SAVE AS EXCEL / CSV / SERIALIZE DATA ------------
 
-            // Excel with 4 sheets
-            spreadsheet1.SaveExcelAs("test");
-            spreadsheet1.SaveExcelAs("test2", password: "optional_password");
+                // Excel with 4 sheets
+                spreadsheet1.SaveExcelAs("test");
+                spreadsheet1.SaveExcelAs("test2", password: "optional_password");
 
-            // 4 Csv files, will create a new folder and place the files inside, one per sheet
-            spreadsheet1.SaveCsvAs(basePath: "temp");
+                // 4 Csv files, will create a new folder and place the files inside, one per sheet
+                spreadsheet1.SaveCsvAs(basePath: "temp");
 
-            // 1 Csv file, for sheet1
-            spreadsheet1.SaveCsvAs(sheet1, "test");
+                // 1 Csv file, for sheet1
+                spreadsheet1.SaveCsvAs(sheet1, "test");
 
-            // Serialize "would be" content of Excel in byte[] form
-            var bytes1 = spreadsheet1.SerializeExcel();
+                // Serialize "would be" content of Excel in byte[] form
+                var bytes1 = spreadsheet1.SerializeExcel();
 
-            // Serialize "would be" content of csv sheet3 in byte[] form
-            var bytes2 = spreadsheet1.SerializeCsv(sheet3);
+                // Serialize "would be" content of csv sheet3 in byte[] form
+                var bytes2 = spreadsheet1.SerializeCsv(sheet3);
 
-            // String content of csv sheet3
-            List<string> csvSheet3 = spreadsheet1.GetSheetAsCsv(sheet3);
-            string allInOne = spreadsheet1.GetSheetAsCsvString(sheet3);
-
+                // String content of csv sheet3
+                List<string> csvSheet3 = spreadsheet1.GetSheetAsCsv(sheet3);
+                string allInOne = spreadsheet1.GetSheetAsCsvString(sheet3);
+            }
         }
 
         private static DataTable GetTestDataTable()
