@@ -10,10 +10,10 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            // ------------ PREPARE DATA ------------
-
             using (var spreadsheet1 = new Spreadsheet())
             {
+                // ------------ PREPARE DATA ------------
+
                 IEnumerable<Person> people = GetTestCollection();
                 DataTable cars = GetTestDataTable();
 

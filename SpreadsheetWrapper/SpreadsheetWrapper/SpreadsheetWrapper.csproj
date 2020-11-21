@@ -14,7 +14,7 @@
     <FileVersion>1.1.0.0</FileVersion>
     <Version>1.1.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>Straightforward Excel, CSV or Byte[] generation from List or DataTable with this wrapper built around EPPlus for .NET Core.</Description>
+    <Description>Straightforward Excel, CSV or Byte[] generation from List or DataTable with this wrapper built around EPPlus for .NET Core. See use cases https://github.com/ravikhubchandani/epplus-wrapper/blob/main/SpreadsheetWrapper/Test/Program.cs</Description>
   </PropertyGroup>
 
   <ItemGroup>
