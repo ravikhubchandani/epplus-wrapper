@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 
@@ -13,23 +14,15 @@ namespace SpreadsheetWrapper
     /// <summary>
     /// Build and export spreadsheets to Excel, CSV or Byte Array
     /// </summary>
-    public class SpreadsheetWrapper : IDisposable
+    public class Spreadsheet : IDisposable
     {
         public ExcelPackage Workbook { get; private set; }
 
-        public SpreadsheetWrapper()
+        public Spreadsheet()
         {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             Workbook = new ExcelPackage();
-        }
-
-        /// <summary>
-        /// Enumerate sheets currently in the document
-        /// </summary>
-        /// <returns></returns>
-        public string[] GetSheetNames()
-        {
-            return Workbook.Workbook.Worksheets.Select(x => x.Name).ToArray();
-        }
+        }        
 
         /// <summary>
         /// Returns the specified sheet as byte representation of the equivalent Excel file
@@ -76,6 +69,12 @@ namespace SpreadsheetWrapper
         /// <param name="password"></param>
         public void SaveExcelAs(string fileName, string basePath = @".\", string password = "")
         {
+            fileName = GetValidFileName(fileName);
+            if(!fileName.ToLower().EndsWith(".xlsx"))
+            {
+                fileName += ".xlsx";
+            }
+            Directory.CreateDirectory(basePath);
             string filePath = Path.Combine(basePath, fileName);
             var fInfo = new FileInfo(filePath);
 
@@ -86,6 +85,21 @@ namespace SpreadsheetWrapper
             else
             {
                 Workbook.SaveAs(fInfo, password);
+            }
+        }
+
+        /// <summary>
+        /// Saves the document in one (or more) files, one file per sheet
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="basePath"></param>
+        /// <param name="separator"></param>
+        public void SaveCsvAs(string basePath = @".\", char separator = ';')
+        {
+            var sheetNames = GetSheetNames();
+            foreach (string sheetName in sheetNames)
+            {
+                SaveCsvAs(GetSheetByName(sheetName), sheetName, basePath, separator);
             }
         }
 
@@ -111,6 +125,12 @@ namespace SpreadsheetWrapper
         /// <param name="separator"></param>
         public void SaveCsvAs(ExcelWorksheet sheet, string fileName, string basePath = @".\", char separator = ';')
         {
+            fileName = GetValidFileName(fileName);
+            if (!fileName.ToLower().EndsWith(".csv"))
+            {
+                fileName += ".csv";
+            }
+            Directory.CreateDirectory(basePath);
             string filePath = Path.Combine(basePath, fileName);
             string content = GetSheetAsCsvString(sheet, separator);
             File.WriteAllText(filePath, content, Encoding.UTF8);
@@ -188,9 +208,9 @@ namespace SpreadsheetWrapper
         /// <param name="includeHeader">Generate header using DataTable ColumnName attribute</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
-        public void InsertTable(DataTable table, bool includeHeader = true, int rowIndex = 2, int columnIndex = 1)
+        public void InsertTable(DataTable table, bool includeHeader = true, Func<object[], string[]> rowConverter = null, int rowIndex = 2, int columnIndex = 1)
         {
-            InsertTable(table, table.TableName, includeHeader, rowIndex, columnIndex);
+            InsertTable(table, table.TableName, includeHeader, rowConverter, rowIndex, columnIndex);
         }
 
         /// <summary>
@@ -201,7 +221,7 @@ namespace SpreadsheetWrapper
         /// <param name="includeHeader">Generate header using DataTable ColumnName attribute</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
-        public void InsertTable(DataTable table, string sheetName, bool includeHeader = true, int rowIndex = 2, int columnIndex = 1)
+        public void InsertTable(DataTable table, string sheetName, bool includeHeader = true, Func<object[], string[]> rowConverter = null, int rowIndex = 2, int columnIndex = 1)
         {
             ExcelWorksheet sheet;
 
@@ -228,7 +248,7 @@ namespace SpreadsheetWrapper
                 sheet = GetSheetByName(sheetName);
             }
 
-            InsertTable(table, sheet, rowIndex, columnIndex);
+            InsertTable(table, sheet, rowConverter, rowIndex, columnIndex);
         }
 
         /// <summary>
@@ -238,12 +258,48 @@ namespace SpreadsheetWrapper
         /// <param name="sheet">Sheet to insert data</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
-        public void InsertTable(DataTable table, ExcelWorksheet sheet, int rowIndex = 2, int columnIndex = 1)
+        public void InsertTable(DataTable table, ExcelWorksheet sheet, Func<object[], string[]> rowConverter = null, int rowIndex = 2, int columnIndex = 1)
         {
-            foreach (DataRow row in table.Rows)
+            if (rowIndex <= 0) rowIndex = 1;
+            if (columnIndex <= 0) columnIndex = 1;
+
+            if (rowConverter == null)
             {
-                InsertRow(sheet, row.ItemArray, rowIndex, columnIndex);
+                sheet.Cells[GetRangeForCell(rowIndex, columnIndex)].LoadFromDataTable(table);
             }
+            else
+            {
+                var content = new List<string[]>();
+                foreach (DataRow row in table.Rows)
+                {
+                    content.Add(rowConverter.Invoke(row.ItemArray));
+                }
+                InsertRows(sheet, content, rowIndex, columnIndex);
+            }
+        }
+
+        /// <summary>
+        /// Will insert data parameter in the specified sheet starting at the specified index
+        /// </summary>
+        /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
+        /// <param name="data">Data to insert in sheet</param>
+        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        public void InsertRow(string sheetName, string[] data, int rowIndex = 2, int columnIndex = 1)
+        {
+            InsertRows(sheetName, new List<string[]> { data }, rowIndex, columnIndex);
+        }
+
+        /// <summary>
+        /// Will insert data parameter in the specified sheet starting at the specified index
+        /// </summary>
+        /// <param name="sheet">Sheet to insert data</param>
+        /// <param name="data">Data to insert in sheet</param>
+        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        public void InsertRow(ExcelWorksheet sheet, string[] data, int rowIndex = 2, int columnIndex = 1)
+        {
+            InsertRows(sheet, new List<string[]> { data }, rowIndex, columnIndex);
         }
 
         /// <summary>
@@ -253,7 +309,7 @@ namespace SpreadsheetWrapper
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
-        public void InsertRows(string sheetName, IEnumerable<object[]> data, int rowIndex = 2, int columnIndex = 1)
+        public void InsertRows(string sheetName, IEnumerable<string[]> data, int rowIndex = 2, int columnIndex = 1)
         {
             var sheet = GetSheetByName(sheetName);
             InsertRows(sheet, data, rowIndex, columnIndex);
@@ -266,42 +322,13 @@ namespace SpreadsheetWrapper
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
-        public void InsertRows(ExcelWorksheet sheet, IEnumerable<object[]> data, int rowIndex = 2, int columnIndex = 1)
+        public void InsertRows(ExcelWorksheet sheet, IEnumerable<string[]> data, int rowIndex = 2, int columnIndex = 1)
         {
             if (rowIndex <= 0) rowIndex = 1;
             if (columnIndex <= 0) columnIndex = 1;
 
             sheet.Cells[GetRangeForCell(rowIndex, columnIndex)].LoadFromArrays(data);
         }
-
-        /// <summary>
-        /// Will insert data parameter in the specified sheet starting at the specified index
-        /// </summary>
-        /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
-        /// <param name="data">Data to insert in sheet</param>
-        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
-        public void InsertRow(string sheetName, object[] data, int rowIndex = 2, int columnIndex = 1)
-        {
-            var sheet = GetSheetByName(sheetName);
-            InsertRow(sheet, data, rowIndex, columnIndex);
-        }
-
-        /// <summary>
-        /// Will insert data parameter in the specified sheet starting at the specified index
-        /// </summary>
-        /// <param name="sheet">Sheet to insert data</param>
-        /// <param name="data">Data to insert in sheet</param>
-        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
-        public void InsertRow(ExcelWorksheet sheet, object[] data, int rowIndex = 2, int columnIndex = 1)
-        {
-            if (rowIndex <= 0) rowIndex = 1;
-            if (columnIndex <= 0) columnIndex = 1;
-
-            sheet.Cells[GetRangeForCell(rowIndex, columnIndex)].LoadFromCollection(data);
-        }
-        
 
         /// <summary>
         /// Will create (if sheet is not already created) in the current document and set a header. Header auto-filter enabled for Excel
@@ -317,8 +344,7 @@ namespace SpreadsheetWrapper
             if (columnIndex <= 0) columnIndex = 1;
 
             var sheet = GetSheetByName(sheetName);
-            string endColumn = GetExcelColumnName(header.Length);
-            string range = GetRangeForCell(rowIndex, columnIndex);
+            string range = $"{GetRangeForCell(rowIndex, columnIndex)}:{GetRangeForCell(rowIndex, header.Length)}";
             sheet.Cells[range].LoadFromArrays(new List<string[]>(new[] { header }));
             sheet.Cells[range].AutoFilter = true;
             sheet.Cells[range].Style.Font.Bold = true;
@@ -336,7 +362,7 @@ namespace SpreadsheetWrapper
         /// <returns></returns>
         public ExcelWorksheet GetSheetByName(string sheetName)
         {
-            if (string.IsNullOrWhiteSpace(sheetName))
+            if (!string.IsNullOrWhiteSpace(sheetName))
             {
                 var sheet = Workbook.Workbook.Worksheets[sheetName];
                 if (sheet == null)
@@ -349,6 +375,15 @@ namespace SpreadsheetWrapper
             {
                 throw new ArgumentNullException("Argument sheetName is null or empty string");
             }
+        }
+
+        /// <summary>
+        /// Enumerate sheets currently in the document
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetSheetNames()
+        {
+            return Workbook.Workbook.Worksheets.Select(x => x.Name).ToArray();
         }
 
         protected string GetRangeForCell(int rowIndex, int columnIndex)
@@ -370,6 +405,12 @@ namespace SpreadsheetWrapper
             }
 
             return columnName;
+        }
+
+        protected string GetValidFileName(string fileName)
+        {
+            String ret = Regex.Replace(fileName.Trim(), "[^A-Za-z0-9_. ]+", "");
+            return ret.Replace(' ', '_');
         }
 
         public void Dispose()

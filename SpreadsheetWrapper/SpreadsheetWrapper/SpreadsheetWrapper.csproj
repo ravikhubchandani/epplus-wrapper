@@ -12,7 +12,9 @@
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <FileVersion>1.1.0.0</FileVersion>
-    <Version>1.1.0</Version>
+    <Version>1.1.2</Version>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Straightforward Excel, CSV or Byte[] generation from List or DataTable with this wrapper built around EPPlus for .NET Core.</Description>
   </PropertyGroup>
 
   <ItemGroup>
