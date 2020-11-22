@@ -1,2 +1,1 @@
-# epplus-wrapper
-Build and export spreadsheets to Excel, CSV or Byte Array
+Straightforward Excel, CSV or Byte[] generation from List or DataTable with this wrapper built around EPPlus for .NET Core. See use cases https://github.com/ravikhubchandani/epplus-wrapper/blob/main/SpreadsheetWrapper/Test/Program.cs
