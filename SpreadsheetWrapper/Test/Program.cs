@@ -21,19 +21,20 @@ namespace Test
 
                 // Insert all people
                 var sheet1 = spreadsheet1.GetSheetByNameWithHeader("Everyone", new string[] { "Name", "Age", "IsMale", "Date of birth" });
-                spreadsheet1.InsertRows(sheet1, people.Select(x => x.ConvertToRow()));
+                spreadsheet1.InsertRows(sheet1, people.Select(x => x.ConvertToRow()), autofit: false);
 
                 // Insert adults only (new Adults sheet will be inserted), no header and will leave one blank column
-                spreadsheet1.InsertRows(sheetName: "Adults", people.Where(x => x.Age >= 18).Select(x => x.ConvertToRow()), rowIndex: 1, columnIndex: 2);
+                spreadsheet1.InsertRows(sheetName: "Adults", people.Where(x => x.Age >= 18).Select(x => x.ConvertToRow()), rowIndex: 1, columnIndex: 2, autofit: true);
 
                 // Insert one single row
                 spreadsheet1.InsertRow(sheet1, new Person { Name = "Dog", Age = 3, DateOfBirth = new DateTime(2018, 4, 21), IsMale = true }.ConvertToRow(), rowIndex: 6);
+                spreadsheet1.Autofit(sheet1);
 
                 // Insert cars, first using default row generator then using custom row generator
                 spreadsheet1.InsertTable(cars, includeHeader: true);
                 var sheet3 = spreadsheet1.GetSheetByName(cars.TableName);
 
-                spreadsheet1.InsertTable(cars, sheetName: "custom built cars", includeHeader: true, rowConverter: (x) => Car.ConvertToRow(x));
+                spreadsheet1.InsertTable(cars, sheetName: "custom built cars", includeHeader: true, rowConverter: (x) => Car.ConvertToRow(x), autofit: true);
 
                 // ------------ SAVE AS EXCEL / CSV / SERIALIZE DATA ------------
 
@@ -67,7 +68,7 @@ namespace Test
             dt.Columns.Add("TurboMode", typeof(bool));
             dt.Columns.Add("Year", typeof(DateTime));
             dt.Rows.Add(new object[] { "Honda", 5, false, new DateTime(1990, 7, 3) });
-            dt.Rows.Add(new object[] { "Mazda", 2, false, new DateTime(1986, 1, 30) });
+            dt.Rows.Add(new object[] { "Mazda", 2, true, new DateTime(1986, 1, 30) });
             dt.Rows.Add(new object[] { "Toyota", 5, false, new DateTime(1950, 8, 18) });
             dt.Rows.Add(new object[] { "Ford", 7, false, new DateTime(1955, 8, 11) });
             return dt;
