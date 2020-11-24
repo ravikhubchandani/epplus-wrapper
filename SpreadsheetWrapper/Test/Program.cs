@@ -23,12 +23,12 @@ namespace Test
                 var sheet1 = spreadsheet1.GetSheetByNameWithHeader("Everyone", new string[] { "Name", "Age", "IsMale", "Date of birth" });
                 spreadsheet1.InsertRows(sheet1, people.Select(x => x.ConvertToRow()), autofit: false);
 
-                // Insert adults only (new Adults sheet will be inserted), no header and will leave one blank column
-                spreadsheet1.InsertRows(sheetName: "Adults", people.Where(x => x.Age >= 18).Select(x => x.ConvertToRow()), rowIndex: 1, columnIndex: 2, autofit: true);
-
                 // Insert one single row
-                spreadsheet1.InsertRow(sheet1, new Person { Name = "Dog", Age = 3, DateOfBirth = new DateTime(2018, 4, 21), IsMale = true }.ConvertToRow(), rowIndex: 6);
+                spreadsheet1.InsertRowAtEnd(sheet1, new Person { Name = "Dog", Age = 3, DateOfBirth = new DateTime(2018, 4, 21), IsMale = true }.ConvertToRow());
                 spreadsheet1.Autofit(sheet1);
+
+                // Insert adults only (new Adults sheet will be inserted), no header and will leave one blank column and one blank row
+                spreadsheet1.InsertRows(sheetName: "Adults", people.Where(x => x.Age >= 18).Select(x => x.ConvertToRow()), rowIndex: 2, columnIndex: 2, autofit: true);
 
                 // Insert cars, first using default row generator then using custom row generator
                 spreadsheet1.InsertTable(cars, includeHeader: true);

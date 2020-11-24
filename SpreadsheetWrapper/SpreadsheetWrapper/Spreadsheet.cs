@@ -299,6 +299,56 @@ namespace SpreadsheetWrapper
         }
 
         /// <summary>
+        /// Will insert data parameter in the specified sheet starting after the last row
+        /// </summary>
+        /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
+        /// <param name="data">Data to insert in sheet</param>
+        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="autofit">Should adjust all content columns width</param>
+        public void InsertRowAtEnd(string sheetName, string[] data, int columnIndex = 1, bool autofit = false)
+        {
+            InsertRowsAtEnd(sheetName, new List<string[]> { data }, columnIndex, autofit);
+        }
+
+        /// <summary>
+        /// Will insert data parameter in the specified sheet starting after the last row
+        /// </summary>
+        /// <param name="sheet">Sheet to insert data</param>
+        /// <param name="data">Data to insert in sheet</param>
+        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="autofit">Should adjust all content columns width</param>
+        public void InsertRowAtEnd(ExcelWorksheet sheet, string[] data, int columnIndex = 1, bool autofit = false)
+        {
+            InsertRowsAtEnd(sheet, new List<string[]> { data }, columnIndex, autofit);
+        }
+
+        /// <summary>
+        /// Will insert bulk data in the specified sheet starting after the last row
+        /// </summary>
+        /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
+        /// <param name="data">Data to insert in sheet</param>
+        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="autofit">Should adjust all content columns width</param>
+        public void InsertRowsAtEnd(string sheetName, IEnumerable<string[]> data, int columnIndex = 1, bool autofit = false)
+        {
+            var sheet = GetSheetByName(sheetName);
+            InsertRowsAtEnd(sheet, data, columnIndex, autofit);
+        }
+
+        /// <summary>
+        /// Will insert bulk data in the specified sheet starting after the last row
+        /// </summary>
+        /// <param name="sheet">Sheet to insert data</param>
+        /// <param name="data">Data to insert in sheet</param>
+        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="autofit">Should adjust all content columns width</param>
+        public void InsertRowsAtEnd(ExcelWorksheet sheet, IEnumerable<string[]> data, int columnIndex = 1, bool autofit = false)
+        {
+            int rowIndex = sheet.Dimension != null ? sheet.Dimension.Rows + 1 : 1;
+            InsertRows(sheet, data, rowIndex, columnIndex, autofit);
+        }
+
+        /// <summary>
         /// Will insert data parameter in the specified sheet starting at the specified index
         /// </summary>
         /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
@@ -357,6 +407,56 @@ namespace SpreadsheetWrapper
             {
                 Autofit(sheet);
             }
+        }
+
+        /// <summary>
+        /// Get index of the last row with content
+        /// </summary>
+        /// <param name="sheetName">Name of sheet to query</param>
+        /// <returns></returns>
+        public int GetLastRowIndex(string sheetName)
+        {
+            var sheet = GetSheetByName(sheetName);
+            return GetLastRowIndex(sheet);
+        }
+
+        /// <summary>
+        /// Get index of the last row with content
+        /// </summary>
+        /// <param name="sheet">Sheet to query</param>
+        /// <returns></returns>
+        public int GetLastRowIndex(ExcelWorksheet sheet)
+        {
+            if(sheet != null && sheet.Dimension != null)
+            {
+                return sheet.Dimension.Rows;
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Get index of the last column with content
+        /// </summary>
+        /// <param name="sheetName">Name of sheet to query</param>
+        /// <returns></returns>
+        public int GetLastColumnIndex(string sheetName)
+        {
+            var sheet = GetSheetByName(sheetName);
+            return GetLastColumnIndex(sheet);
+        }
+
+        /// <summary>
+        /// Get index of the last column with content
+        /// </summary>
+        /// <param name="sheet">Sheet to query</param>
+        /// <returns></returns>
+        public int GetLastColumnIndex(ExcelWorksheet sheet)
+        {
+            if (sheet != null && sheet.Dimension != null)
+            {
+                return sheet.Dimension.Columns;
+            }
+            return 0;
         }
 
         /// <summary>
