@@ -1,13 +1,12 @@
-﻿using System;
+﻿using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 
 namespace SpreadsheetWrapper
 {
@@ -493,6 +492,9 @@ namespace SpreadsheetWrapper
         {
             if (!string.IsNullOrWhiteSpace(sheetName))
             {
+                if (sheetName.Length > 31)
+                    throw new ArgumentException("Maximum length for sheet name is 31 characters");
+
                 var sheet = Workbook.Workbook.Worksheets[sheetName];
                 if (sheet == null)
                 {
@@ -547,8 +549,9 @@ namespace SpreadsheetWrapper
 
         protected string GetValidFileName(string fileName)
         {
-            String ret = Regex.Replace(fileName.Trim(), "[^A-Za-z0-9_. ]+", "");
-            return ret.Replace(' ', '_');
+            foreach (char c in Path.GetInvalidFileNameChars())
+                fileName = fileName.Replace(c, '_');
+            return fileName;
         }
 
         public void Dispose()
