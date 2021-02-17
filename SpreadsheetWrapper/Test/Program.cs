@@ -93,9 +93,9 @@ namespace Test
             public bool IsMale { get; set; }
             public DateTime DateOfBirth { get; set; }
 
-            public string[] ConvertToRow()
+            public IEnumerable<string> ConvertToRow()
             {
-                return new string[]
+                return new List<string>
                 {
                     Name,
                     Age.ToString(),
@@ -112,7 +112,7 @@ namespace Test
             public int NumberOfPassengers { get; set; }
             public bool TurboMode { get; set; }
 
-            public static string[] ConvertToRow(object[] car)
+            public static IEnumerable<string> ConvertToRow(object[] car)
             {
                 return new string[]
                 {

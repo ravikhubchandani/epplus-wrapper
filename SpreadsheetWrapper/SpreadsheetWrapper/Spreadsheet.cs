@@ -214,11 +214,11 @@ namespace SpreadsheetWrapper
         /// </summary>
         /// <param name="table">DataTable object to dump</param>
         /// <param name="includeHeader">Generate header using DataTable ColumnName attribute</param>
-        /// <param name="rowConverter">Function with argument object[] and returns string[]. Specify when default does not yield desired format</param>
+        /// <param name="rowConverter">Function with argument object[] and returns string IEnumerable. Specify when default does not yield desired format</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertTable(DataTable table, bool includeHeader = true, Func<object[], string[]> rowConverter = null, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
+        public void InsertTable(DataTable table, bool includeHeader = true, Func<object[], IEnumerable<string>> rowConverter = null, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
             InsertTable(table, table.TableName, includeHeader, rowConverter, rowIndex, columnIndex, autofit);
         }
@@ -231,9 +231,9 @@ namespace SpreadsheetWrapper
         /// <param name="includeHeader">Generate header using DataTable ColumnName attribute</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="rowConverter">Function with argument object[] and returns string[]. Specify when default does not yield desired format</param>
+        /// <param name="rowConverter">Function with argument object[] and returns string IEnumerable. Specify when default does not yield desired format</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertTable(DataTable table, string sheetName, bool includeHeader = true, Func<object[], string[]> rowConverter = null, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
+        public void InsertTable(DataTable table, string sheetName, bool includeHeader = true, Func<object[], IEnumerable<string>> rowConverter = null, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
             ExcelWorksheet sheet;
 
@@ -270,9 +270,9 @@ namespace SpreadsheetWrapper
         /// <param name="sheet">Sheet to insert data</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="rowConverter">Function with argument object[] and returns string[]. Specify when default does not yield desired format. Specify when default does not yield desired format</param>
+        /// <param name="rowConverter">Function with argument object[] and returns string IEnumerable. Specify when default does not yield desired format. Specify when default does not yield desired format</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertTable(DataTable table, ExcelWorksheet sheet, Func<object[], string[]> rowConverter = null, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
+        public void InsertTable(DataTable table, ExcelWorksheet sheet, Func<object[], IEnumerable<string>> rowConverter = null, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
             if (rowIndex <= 0) rowIndex = 1;
             if (columnIndex <= 0) columnIndex = 1;
@@ -288,7 +288,7 @@ namespace SpreadsheetWrapper
             }
             else
             {
-                var content = new List<string[]>();
+                var content = new List<IEnumerable<string>>();
                 foreach (DataRow row in table.Rows)
                 {
                     content.Add(rowConverter.Invoke(row.ItemArray));
@@ -304,9 +304,9 @@ namespace SpreadsheetWrapper
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertRowAtEnd(string sheetName, string[] data, int columnIndex = 1, bool autofit = false)
+        public void InsertRowAtEnd(string sheetName, IEnumerable<string> data, int columnIndex = 1, bool autofit = false)
         {
-            InsertRowsAtEnd(sheetName, new List<string[]> { data }, columnIndex, autofit);
+            InsertRowsAtEnd(sheetName, new List<IEnumerable<string>> { data }, columnIndex, autofit);
         }
 
         /// <summary>
@@ -316,9 +316,9 @@ namespace SpreadsheetWrapper
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertRowAtEnd(ExcelWorksheet sheet, string[] data, int columnIndex = 1, bool autofit = false)
+        public void InsertRowAtEnd(ExcelWorksheet sheet, IEnumerable<string> data, int columnIndex = 1, bool autofit = false)
         {
-            InsertRowsAtEnd(sheet, new List<string[]> { data }, columnIndex, autofit);
+            InsertRowsAtEnd(sheet, new List<IEnumerable<string>> { data }, columnIndex, autofit);
         }
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace SpreadsheetWrapper
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertRowsAtEnd(string sheetName, IEnumerable<string[]> data, int columnIndex = 1, bool autofit = false)
+        public void InsertRowsAtEnd(string sheetName, IEnumerable<IEnumerable<string>> data, int columnIndex = 1, bool autofit = false)
         {
             var sheet = GetSheetByName(sheetName);
             InsertRowsAtEnd(sheet, data, columnIndex, autofit);
@@ -341,7 +341,7 @@ namespace SpreadsheetWrapper
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertRowsAtEnd(ExcelWorksheet sheet, IEnumerable<string[]> data, int columnIndex = 1, bool autofit = false)
+        public void InsertRowsAtEnd(ExcelWorksheet sheet, IEnumerable<IEnumerable<string>> data, int columnIndex = 1, bool autofit = false)
         {
             int rowIndex = sheet.Dimension != null ? sheet.Dimension.Rows + 1 : 1;
             InsertRows(sheet, data, rowIndex, columnIndex, autofit);
@@ -355,9 +355,9 @@ namespace SpreadsheetWrapper
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertRow(string sheetName, string[] data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
+        public void InsertRow(string sheetName, IEnumerable<string> data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
-            InsertRows(sheetName, new List<string[]> { data }, rowIndex, columnIndex, autofit);
+            InsertRows(sheetName, new List<IEnumerable<string>> { data }, rowIndex, columnIndex, autofit);
         }
 
         /// <summary>
@@ -368,9 +368,9 @@ namespace SpreadsheetWrapper
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertRow(ExcelWorksheet sheet, string[] data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
+        public void InsertRow(ExcelWorksheet sheet, IEnumerable<string> data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
-            InsertRows(sheet, new List<string[]> { data }, rowIndex, columnIndex, autofit);
+            InsertRows(sheet, new List<IEnumerable<string>> { data }, rowIndex, columnIndex, autofit);
         }
 
         /// <summary>
@@ -381,7 +381,7 @@ namespace SpreadsheetWrapper
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertRows(string sheetName, IEnumerable<string[]> data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
+        public void InsertRows(string sheetName, IEnumerable<IEnumerable<string>> data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
             var sheet = GetSheetByName(sheetName);
             InsertRows(sheet, data, rowIndex, columnIndex, autofit);
@@ -395,12 +395,12 @@ namespace SpreadsheetWrapper
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
-        public void InsertRows(ExcelWorksheet sheet, IEnumerable<string[]> data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
+        public void InsertRows(ExcelWorksheet sheet, IEnumerable<IEnumerable<string>> data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
             if (rowIndex <= 0) rowIndex = 1;
             if (columnIndex <= 0) columnIndex = 1;
 
-            sheet.Cells[GetRangeForCell(rowIndex, columnIndex)].LoadFromArrays(data);
+            sheet.Cells[GetRangeForCell(rowIndex, columnIndex)].LoadFromArrays(data.Select(x => x.ToArray()));
 
             if (autofit)
             {
@@ -466,14 +466,14 @@ namespace SpreadsheetWrapper
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
         /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
         /// <returns></returns>
-        public ExcelWorksheet GetSheetByNameWithHeader(string sheetName, string[] header, int rowIndex = 1, int columnIndex = 1)
+        public ExcelWorksheet GetSheetByNameWithHeader(string sheetName, IEnumerable<string> header, int rowIndex = 1, int columnIndex = 1)
         {
             if (rowIndex <= 0) rowIndex = 1;
             if (columnIndex <= 0) columnIndex = 1;
 
             var sheet = GetSheetByName(sheetName);
-            string range = $"{GetRangeForCell(rowIndex, columnIndex)}:{GetRangeForCell(rowIndex, header.Length)}";
-            sheet.Cells[range].LoadFromArrays(new List<string[]>(new[] { header }));
+            string range = $"{GetRangeForCell(rowIndex, columnIndex)}:{GetRangeForCell(rowIndex, header.Count())}";
+            sheet.Cells[range].LoadFromArrays(new List<string[]>(new[] { header.ToArray() }));
             sheet.Cells[range].AutoFilter = true;
             sheet.Cells[range].Style.Font.Bold = true;
             sheet.Cells[range].Style.Font.Color.SetColor(Color.White);
@@ -512,9 +512,9 @@ namespace SpreadsheetWrapper
         /// Enumerate sheets currently in the document
         /// </summary>
         /// <returns></returns>
-        public string[] GetSheetNames()
+        public IEnumerable<string> GetSheetNames()
         {
-            return Workbook.Workbook.Worksheets.Select(x => x.Name).ToArray();
+            return Workbook.Workbook.Worksheets.Select(x => x.Name);
         }
 
         /// <summary>
