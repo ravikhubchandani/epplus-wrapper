@@ -216,7 +216,7 @@ namespace SpreadsheetWrapper
         /// <param name="includeHeader">Generate header using DataTable ColumnName attribute</param>
         /// <param name="rowConverter">Function with argument object[] and returns string IEnumerable. Specify when default does not yield desired format</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertTable(DataTable table, bool includeHeader = true, Func<object[], IEnumerable<string>> rowConverter = null, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
@@ -230,7 +230,7 @@ namespace SpreadsheetWrapper
         /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
         /// <param name="includeHeader">Generate header using DataTable ColumnName attribute</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="rowConverter">Function with argument object[] and returns string IEnumerable. Specify when default does not yield desired format</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertTable(DataTable table, string sheetName, bool includeHeader = true, Func<object[], IEnumerable<string>> rowConverter = null, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
@@ -269,7 +269,7 @@ namespace SpreadsheetWrapper
         /// <param name="table">DataTable object to dump</param>
         /// <param name="sheet">Sheet to insert data</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="rowConverter">Function with argument object[] and returns string IEnumerable. Specify when default does not yield desired format. Specify when default does not yield desired format</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertTable(DataTable table, ExcelWorksheet sheet, Func<object[], IEnumerable<string>> rowConverter = null, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
@@ -302,7 +302,7 @@ namespace SpreadsheetWrapper
         /// </summary>
         /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
         /// <param name="data">Data to insert in sheet</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertRowAtEnd(string sheetName, IEnumerable<string> data, int columnIndex = 1, bool autofit = false)
         {
@@ -314,7 +314,7 @@ namespace SpreadsheetWrapper
         /// </summary>
         /// <param name="sheet">Sheet to insert data</param>
         /// <param name="data">Data to insert in sheet</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertRowAtEnd(ExcelWorksheet sheet, IEnumerable<string> data, int columnIndex = 1, bool autofit = false)
         {
@@ -326,7 +326,7 @@ namespace SpreadsheetWrapper
         /// </summary>
         /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
         /// <param name="data">Data to insert in sheet</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertRowsAtEnd(string sheetName, IEnumerable<IEnumerable<string>> data, int columnIndex = 1, bool autofit = false)
         {
@@ -339,7 +339,7 @@ namespace SpreadsheetWrapper
         /// </summary>
         /// <param name="sheet">Sheet to insert data</param>
         /// <param name="data">Data to insert in sheet</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertRowsAtEnd(ExcelWorksheet sheet, IEnumerable<IEnumerable<string>> data, int columnIndex = 1, bool autofit = false)
         {
@@ -353,7 +353,7 @@ namespace SpreadsheetWrapper
         /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertRow(string sheetName, IEnumerable<string> data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
@@ -366,7 +366,7 @@ namespace SpreadsheetWrapper
         /// <param name="sheet">Sheet to insert data</param>
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertRow(ExcelWorksheet sheet, IEnumerable<string> data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
@@ -379,7 +379,7 @@ namespace SpreadsheetWrapper
         /// <param name="sheetName">Sheet to insert data. If the sheet is not found, it will be created</param>
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertRows(string sheetName, IEnumerable<IEnumerable<string>> data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
@@ -393,7 +393,7 @@ namespace SpreadsheetWrapper
         /// <param name="sheet">Sheet to insert data</param>
         /// <param name="data">Data to insert in sheet</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <param name="autofit">Should adjust all content columns width</param>
         public void InsertRows(ExcelWorksheet sheet, IEnumerable<IEnumerable<string>> data, int rowIndex = 2, int columnIndex = 1, bool autofit = false)
         {
@@ -406,6 +406,73 @@ namespace SpreadsheetWrapper
             {
                 Autofit(sheet);
             }
+        }
+
+        /// <summary>
+        /// Insert a picture in the specified sheet
+        /// </summary>
+        /// <param name="sheetName">Sheet to insert data</param>
+        /// <param name="imagePath">Path to image file</param>
+        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
+        /// <param name="imageHeightPixel">Picture height size in pixels. Leave value 0 for original size</param>
+        /// <param name="imageWidthPixel">Picture width size in pixels. Leave value 0 for original size</param>
+        public void InsertImage(string sheetName, string imagePath, int rowIndex = 2, int columnIndex = 1, int imageHeightPixel = 0, int imageWidthPixel = 0)
+        {
+            var sheet = GetSheetByName(sheetName);
+            var image = Image.FromFile(imagePath);
+            InsertImage(sheet, image, rowIndex, columnIndex, imageHeightPixel, imageWidthPixel);
+        }
+
+        /// <summary>
+        /// Insert a picture in the specified sheet
+        /// </summary>
+        /// <param name="sheetName">Sheet to insert data</param>
+        /// <param name="image">Image object</param>
+        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
+        /// <param name="imageHeightPixel">Picture height size in pixels. Leave value 0 for original size</param>
+        /// <param name="imageWidthPixel">Picture width size in pixels. Leave value 0 for original size</param>
+        public void InsertImage(string sheetName, Image image, int rowIndex = 2, int columnIndex = 1, int imageHeightPixel = 0, int imageWidthPixel = 0)
+        {
+            var sheet = GetSheetByName(sheetName);
+            InsertImage(sheet, image, rowIndex, columnIndex, imageHeightPixel, imageWidthPixel);
+        }
+
+        /// <summary>
+        /// Insert a picture in the specified sheet
+        /// </summary>
+        /// <param name="sheet">Sheet to insert data</param>
+        /// <param name="imagePath">Path to image file</param>
+        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
+        /// <param name="imageHeightPixel">Picture height size in pixels. Leave value 0 for original size</param>
+        /// <param name="imageWidthPixel">Picture width size in pixels. Leave value 0 for original size</param>
+        public void InsertImage(ExcelWorksheet sheet, string imagePath, int rowIndex = 2, int columnIndex = 1, int imageHeightPixel = 0, int imageWidthPixel = 0)
+        {
+            var image = Image.FromFile(imagePath);
+            InsertImage(sheet, image, rowIndex, columnIndex, imageHeightPixel, imageWidthPixel);
+        }
+
+        /// <summary>
+        /// Insert a picture in the specified sheet
+        /// </summary>
+        /// <param name="sheet">Sheet to insert data</param>
+        /// <param name="image">Image object</param>
+        /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
+        /// <param name="imageHeightPixel">Picture height size in pixels. Leave value 0 for original size</param>
+        /// <param name="imageWidthPixel">Picture width size in pixels. Leave value 0 for original size</param>
+        public void InsertImage(ExcelWorksheet sheet, Image image, int rowIndex = 2, int columnIndex = 1, int imageHeightPixel = 0, int imageWidthPixel = 0)
+        {
+            if (rowIndex <= 0) rowIndex = 1;
+            if (columnIndex <= 0) columnIndex = 1;
+            if (imageHeightPixel <= 0) imageHeightPixel = image.Height;
+            if (imageWidthPixel <= 0) imageWidthPixel = image.Width;
+
+            var o = sheet.Drawings.AddPicture(Guid.NewGuid().ToString(), image);
+            o.SetPosition(rowIndex, 0, columnIndex, 0);
+            o.SetSize(imageWidthPixel, imageHeightPixel);
         }
 
         /// <summary>
@@ -464,7 +531,7 @@ namespace SpreadsheetWrapper
         /// <param name="sheetName">Sheet name to find or create</param>
         /// <param name="header">Header text values</param>
         /// <param name="rowIndex">Row index to start inserting. Index starts from 1</param>
-        /// <param name="columnIndex">Row index to start inserting. Index starts from 1</param>
+        /// <param name="columnIndex">Column index to start inserting. Index starts from 1</param>
         /// <returns></returns>
         public ExcelWorksheet GetSheetByNameWithHeader(string sheetName, IEnumerable<string> header, int rowIndex = 1, int columnIndex = 1)
         {

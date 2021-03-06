@@ -9,4 +9,10 @@
     <ProjectReference Include="..\SpreadsheetWrapper\SpreadsheetWrapper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="tux.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

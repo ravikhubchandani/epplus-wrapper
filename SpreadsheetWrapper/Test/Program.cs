@@ -34,7 +34,8 @@ namespace Test
                 spreadsheet1.InsertTable(cars, includeHeader: true);
                 var sheet3 = spreadsheet1.GetSheetByName(cars.TableName);
 
-                spreadsheet1.InsertTable(cars, sheetName: "custom built cars", includeHeader: true, rowConverter: (x) => Car.ConvertToRow(x), autofit: true);
+                spreadsheet1.InsertTable(cars, sheetName: "custom built cars", includeHeader: true, rowConverter: (x) => Car.ConvertToRow(x), autofit: true, rowIndex: 10);
+                spreadsheet1.InsertImage("custom built cars", "tux.png", imageHeightPixel: 75, imageWidthPixel: 125);
 
                 // ------------ SAVE AS EXCEL / CSV / SERIALIZE DATA ------------
 
