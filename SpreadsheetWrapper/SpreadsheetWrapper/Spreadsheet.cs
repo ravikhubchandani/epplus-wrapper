@@ -57,7 +57,7 @@ namespace SpreadsheetWrapper
         public byte[] SerializeCsv(ExcelWorksheet sheet, char separator = ';')
         {
             var content = GetSheetAsCsv(sheet, separator);
-            return content.SelectMany(x => Encoding.UTF8.GetBytes(x)).ToArray();
+            return content.SelectMany(x => Encoding.UTF8.GetBytes(x + Environment.NewLine)).ToArray();
         }
 
         /// <summary>
